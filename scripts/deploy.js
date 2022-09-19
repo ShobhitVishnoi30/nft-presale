@@ -16,16 +16,17 @@ async function main() {
   const accounts = await hre.ethers.getSigners();
 
   // We get the contract to deploy
-  const StakingRewards = await hre.ethers.getContractFactory("StakingRewards");
-  const stakingReward = await StakingRewards.deploy(
-    accounts[0].address,
-    rewardToken.address,
-    stakingToken.address
+  const NFTPresale = await hre.ethers.getContractFactory("NFTPresale");
+  const nftPresale = await NFTPresale.deploy(
+    "NFTPresale",
+    "NPS",
+    "google.com",
+    "1200"
   );
 
-  await stakingReward.deployed();
+  await nftPresale.deployed();
 
-  console.log("Staking Reward deployed to:", stakingReward.address);
+  console.log("NFT presale deployed to:", nftPresale.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
