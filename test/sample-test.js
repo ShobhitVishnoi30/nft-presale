@@ -57,6 +57,48 @@ async function Testing() {
 
       expect(await nft.balanceOf(user2.address)).to.equal(1);
     });
+
+    it("whitelisted addresses needs to provide sufficient ether", async function () {
+      expect(await nft.balanceOf(user2.address)).to.equal(1);
+
+      await expect(
+        nft.connect(user2).mint(1, { value: "240000000000000000" })
+      ).to.be.revertedWith("insufficient funds");
+    });
+
+    it("whitelisted addresses can not mint more than 2 nft in presale", async function () {
+      expect(await nft.balanceOf(user2.address)).to.equal(1);
+
+      await expect(
+        nft.connect(user2).mint(2, { value: "500000000000000000" })
+      ).to.be.revertedWith("max NFT per address exceeded");
+    });
+
+    it("user can not mint more than supply", async function () {
+      expect(await nft.totalSupply()).to.equal(1);
+
+      expect(await nft.maximumNFTSupply()).to.equal(100);
+
+      await expect(
+        nft.connect(user2).mint(100, { value: "25000000000000000000" })
+      ).to.be.revertedWith("max NFT limit exceeded");
+
+      await mine(10);
+    });
+
+    it("price should be different after preslae", async function () {
+      expect(await nft.getPrice()).to.equal("500000000000000000");
+    });
+
+    it("after presale not whitelisted addresses can also buy", async function () {
+      expect(await nft.whitelistedAddresses(user3.address)).to.equal(false);
+
+      expect(await nft.balanceOf(user3.address)).to.equal("0");
+
+      await nft.connect(user3).mint(3, { value: "1500000000000000000" });
+
+      expect(await nft.balanceOf(user3.address)).to.equal("3");
+    });
   });
 }
 
